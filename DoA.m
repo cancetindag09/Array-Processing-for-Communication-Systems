@@ -2,7 +2,8 @@ clc;
 clear all;
 close all;
 
-load('spcom/spcom_50sep');
+%spcom_10 for dataset with 10 degree seperation.
+load('spcom_50sep');
 
 Rx = cov(X.');
 theta_deg = (0:0.01:180).';
@@ -22,9 +23,9 @@ U = U(:,I(num_sources + 2:end));
 Cl = zeros(2*M-1,1);
 
 for i=1:res
-    
     a_theta = exp(-2*1i*pi*cos(theta_rad(i))*dist).';
-     cand_corr(end-i+1) = mean(abs(a_theta' * X));
+
+    cand_corr(end-i+1) = mean(abs(a_theta' * X));
     cand_CB(i) = abs(a_theta'*Rx*a_theta/(a_theta'*a_theta));
     cand_MVDR(i) = abs((a_theta'/Rx*a_theta)^-1);
     cand_MUSIC(i) = 1./(a_theta'*(U*U')*a_theta);
@@ -54,17 +55,22 @@ true_rts = rts(ind);
 true_angles = acos(Delta^-1*(2*pi)^-1*imag(log(true_rts)))/pi*180;
 
 figure;
-subplot(3,1,1);
+subplot(4,1,1);
 plot(theta_deg,10*log10(abs(cand_CB)),'LineWidth',2);
+title('Output Power vs Theta (Correlation Method)');
+xlabel('Angle (dg)');ylabel('Power');
+
+subplot(4,1,2);
+plot(theta_deg,10*log10(cand_CB),'LineWidth',2);
 title('Output Power vs Theta (Classical Beamformer Approach)');
 xlabel('Angle (dg)');ylabel('Power');
 
-subplot(3,1,2);
-plot(theta_deg,10*log10(abs(cand_MVDR)),'LineWidth',2);
+subplot(4,1,3);
+plot(theta_deg,10*log10(cand_MVDR),'LineWidth',2);
 title('Output Power vs Theta (MVDR)');
 xlabel('Angle (dg)');ylabel('Power');
 
-subplot(3,1,3);
+subplot(4,1,4);
 plot(theta_deg,10*log10(abs(cand_MUSIC)),'LineWidth',2);
 title('Output Power vs Theta (MUSIC)');
 xlabel('Angle (dg)');ylabel('Power');
